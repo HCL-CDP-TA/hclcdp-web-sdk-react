@@ -1,0 +1,31 @@
+{
+  "name": "hclcdp-web-sdk-react",
+  "version": "0.0.1",
+  "description": "HCL CDP Web SDK React Wrapper",
+  "keywords": [
+    "HCLCDP"
+  ],
+  "homepage": "https://github.com/simonpallisterhcl/hclcdp-web-sdk-react#readme",
+  "bugs": {
+    "url": "https://github.com/simonpallisterhcl/hclcdp-web-sdk-react/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simonpallisterhcl/hclcdp-web-sdk-react.git"
+  },
+  "license": "MIT",
+  "author": "Simon Pallister",
+  "type": "module",
+  "main": "./dist/index.ts",
+  "scripts": {
+    "build": "tsup"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.8"
+  }
+}
