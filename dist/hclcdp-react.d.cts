@@ -27,16 +27,21 @@ type EventObject = {
 declare const CdpProvider: ({ writeKey, children }: CdpProviderProps) => react_jsx_runtime.JSX.Element;
 declare const useCdp: () => CdpContextType;
 
+type CdpPageEventProps = {
+    pageName: string | undefined;
+    pageProperties?: Record<string, any>;
+};
+declare const CdpPageEvent: ({ pageName, pageProperties }: CdpPageEventProps) => null;
+
 type CdpContextValue = {
     eventIdentifier: string;
     setEventIdentifier: (identifier: string) => void;
     pageProperties: Record<string, unknown>;
     setPageProperties: (properties: Record<string, unknown>) => void;
 };
-type CdpContextProviderProps = {
+declare const CdpContextProvider: ({ children }: {
     children: ReactNode;
-};
-declare const CdpContextProvider: ({ children }: CdpContextProviderProps) => react_jsx_runtime.JSX.Element;
+}) => react_jsx_runtime.JSX.Element;
 declare const useCdpContext: () => CdpContextValue;
 
-export { CdpClientWrapper, CdpContextProvider, CdpProvider, type EventObject, useCdp, useCdpContext };
+export { CdpClientWrapper, CdpContextProvider, CdpPageEvent, CdpProvider, type EventObject, useCdp, useCdpContext };

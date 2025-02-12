@@ -1,12 +1,11 @@
 "use client"
-
 import { useEffect, useRef } from "react"
 import { CdpProvider, useCdp } from "./CdpProvider"
-import { useCdpContext } from "./CdpContext"
+import { CdpContextProvider, useCdpContext } from "./CdpContext" // Import CdpContextProvider
 
 const CdpInitializer = () => {
   const { page } = useCdp()
-  const { eventIdentifier, pageProperties } = useCdpContext() // Get the identifier from context
+  const { eventIdentifier, pageProperties } = useCdpContext() // Now this should work
   const isInitialized = useRef(false)
 
   useEffect(() => {
@@ -20,18 +19,18 @@ const CdpInitializer = () => {
   return null
 }
 
-// Define the props for CdpClientWrapper
 type CdpClientWrapperProps = {
-  writeKey: string // Explicitly type `writeKey` as a string
-  children: React.ReactNode // Explicitly type `children` as ReactNode
+  writeKey: string
+  children: React.ReactNode
 }
 
-// Wrapper component that provides the CDP context
 export const CdpClientWrapper = ({ writeKey, children }: CdpClientWrapperProps) => {
   return (
     <CdpProvider writeKey={writeKey}>
-      <CdpInitializer />
-      {children}
+      <CdpContextProvider>
+        <CdpInitializer />
+        {children}
+      </CdpContextProvider>
     </CdpProvider>
   )
 }

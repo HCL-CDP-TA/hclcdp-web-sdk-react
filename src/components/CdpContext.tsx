@@ -1,5 +1,4 @@
 "use client"
-
 import { createContext, useContext, useState, ReactNode } from "react"
 
 type CdpContextValue = {
@@ -9,17 +8,12 @@ type CdpContextValue = {
   setPageProperties: (properties: Record<string, unknown>) => void
 }
 
+// Create the context
 const CdpContext = createContext<CdpContextValue | null>(null)
 
-type CdpContextProviderProps = {
-  children: ReactNode // Explicitly type the `children` prop
-}
-
-export const CdpContextProvider = ({ children }: CdpContextProviderProps) => {
-  const [eventIdentifier, setEventIdentifier] = useState("page") // Default value
-  const [pageProperties, setPageProperties] = useState<Record<string, unknown>>({}) // Default value
-
-  console.log("Cdp Provider", eventIdentifier, pageProperties)
+export const CdpContextProvider = ({ children }: { children: ReactNode }) => {
+  const [eventIdentifier, setEventIdentifier] = useState("page")
+  const [pageProperties, setPageProperties] = useState<Record<string, unknown>>({})
 
   return (
     <CdpContext.Provider value={{ eventIdentifier, setEventIdentifier, pageProperties, setPageProperties }}>

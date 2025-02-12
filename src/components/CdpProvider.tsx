@@ -1,15 +1,15 @@
 "use client"
-
 import { createContext, useContext, useEffect, useState, ReactNode, useRef } from "react"
 import { HclCdp } from "hclcdp-web-sdk"
+import { CdpContextProvider } from "./CdpContext" // Import the context provider
 
 type CdpContextType = {
   isReady: boolean
   track: (event: EventObject) => void
   page: (event: EventObject) => void
   identify: (event: EventObject) => void
-  setEventIdentifier: React.Dispatch<React.SetStateAction<string>> // Updated type
-  setPageProperties: React.Dispatch<React.SetStateAction<Record<string, unknown>>> // Updated type
+  setEventIdentifier: React.Dispatch<React.SetStateAction<string>>
+  setPageProperties: React.Dispatch<React.SetStateAction<Record<string, unknown>>>
 }
 
 const CdpContext = createContext<CdpContextType>({
@@ -35,86 +35,84 @@ export type EventObject = {
 export const CdpProvider = ({ writeKey, children }: CdpProviderProps) => {
   const [isReady, setIsReady] = useState(false)
   const [eventIdentifier, setEventIdentifier] = useState("page")
-  const [pageProperties, setPageProperties] = useState({}) // Default value
-  const initialised = useRef(false)
+  const [pageProperties, setPageProperties] = useState({})
+  const initialized = useRef(false)
 
-  // Use refs to store event queues (to avoid re-renders)
   const pageEventQueue = useRef<EventObject[]>([])
   const trackEventQueue = useRef<EventObject[]>([])
   const identifyEventQueue = useRef<EventObject[]>([])
 
   useEffect(() => {
-    if (!initialised.current) {
+    if (typeof window === "undefined") return // Skip initialization on the server
+
+    if (!initialized.current) {
       if (!writeKey) {
         console.error("CDPProvider: Missing writeKey")
         return
       }
 
-      console.log("calling init from provider useEffect")
+      console.log("Initializing CDPProvider with writeKey:", writeKey)
       HclCdp.init(writeKey, {}, (error, sessionData) => {
         if (!error) {
-          initialised.current = true
-          console.log(sessionData)
+          initialized.current = true
+          console.log("CDPProvider initialized successfully:", sessionData)
           setIsReady(true)
 
           // Process queued events
           pageEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            console.log("clearing page queue")
+            console.log("Processing queued page event:", identifier)
             HclCdp.page(identifier, properties, otherIds)
           })
           pageEventQueue.current = [] // Clear queue
 
           trackEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            console.log("clearing track queue")
+            console.log("Processing queued track event:", identifier)
             HclCdp.track(identifier, properties, otherIds)
           })
           trackEventQueue.current = [] // Clear queue
 
           identifyEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            console.log("clearing identify queue")
+            console.log("Processing queued identify event:", identifier)
             HclCdp.identify(identifier, properties, otherIds)
           })
           identifyEventQueue.current = [] // Clear queue
+        } else {
+          console.error("CDPProvider initialization failed:", error)
         }
       })
     }
-  }, [writeKey]) // Only depend on writeKey
+  }, [writeKey])
 
   const page = ({ identifier = eventIdentifier, properties = pageProperties, otherIds = {} }: EventObject) => {
-    // const event: EventObject = { identifier, properties, otherIds }
-
-    console.log("page event", identifier, properties)
-    // if (isReady) {
-    HclCdp.page(identifier, properties, otherIds)
-    // } else {
-    //   pageEventQueue.current.push(event) // Add to queue without triggering re-render
-    // }
+    if (isReady) {
+      HclCdp.page(identifier, properties, otherIds)
+    } else {
+      pageEventQueue.current.push({ identifier, properties, otherIds })
+    }
   }
 
   const track = ({ identifier, properties = {}, otherIds = {} }: EventObject) => {
-    const event: EventObject = { identifier, properties, otherIds }
-
     if (isReady) {
       HclCdp.track(identifier, properties, otherIds)
     } else {
-      trackEventQueue.current.push(event) // Add to queue without triggering re-render
+      trackEventQueue.current.push({ identifier, properties, otherIds })
     }
   }
 
   const identify = ({ identifier, properties = {}, otherIds = {} }: EventObject) => {
-    const event: EventObject = { identifier, properties, otherIds }
-
     if (isReady) {
       HclCdp.identify(identifier, properties, otherIds)
     } else {
-      identifyEventQueue.current.push(event) // Add to queue without triggering re-render
+      identifyEventQueue.current.push({ identifier, properties, otherIds })
     }
   }
 
   return (
-    <CdpContext.Provider value={{ isReady, page, track, identify, setEventIdentifier, setPageProperties }}>
-      {children}
-    </CdpContext.Provider>
+    <CdpContextProvider>
+      <CdpContext.Provider value={{ isReady, page, track, identify, setEventIdentifier, setPageProperties }}>
+        {children}
+      </CdpContext.Provider>
+    </CdpContextProvider>
   )
 }
 

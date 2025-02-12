@@ -7,7 +7,7 @@ type CdpPageEventProps = {
   pageProperties?: Record<string, any>
 }
 
-const CdpPageEvent = ({ pageName = "page", pageProperties = {} }: CdpPageEventProps) => {
+export const CdpPageEvent = ({ pageName = "page", pageProperties = {} }: CdpPageEventProps) => {
   const { setEventIdentifier, setPageProperties } = useCdpContext()
 
   useEffect(() => {
@@ -18,5 +18,3 @@ const CdpPageEvent = ({ pageName = "page", pageProperties = {} }: CdpPageEventPr
 
   return null
 }
-
-export default CdpPageEvent

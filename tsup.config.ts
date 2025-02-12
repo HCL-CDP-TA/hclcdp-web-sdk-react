@@ -2,10 +2,10 @@ import { defineConfig } from "tsup"
 
 export default defineConfig({
   format: ["cjs", "esm"],
-  entry: ["./src/hcl.ts"],
+  entry: ["./src/hclcdp-react.ts"],
   dts: true,
   shims: true,
   skipNodeModulesBundle: true,
-  jsx: "automatic",
+  splitting: false,
   clean: true,
 })
