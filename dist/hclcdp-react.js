@@ -34,12 +34,14 @@ var CdpContext2 = createContext2({
   },
   identify: () => {
   },
+  logout: () => {
+  },
   setEventIdentifier: () => {
   },
   setPageProperties: () => {
   }
 });
-var CdpProvider = ({ writeKey, children }) => {
+var CdpProvider = ({ config, children }) => {
   const [isReady, setIsReady] = useState2(false);
   const [eventIdentifier, setEventIdentifier] = useState2("page");
   const [pageProperties, setPageProperties] = useState2({});
@@ -50,28 +52,23 @@ var CdpProvider = ({ writeKey, children }) => {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!initialized.current) {
-      if (!writeKey) {
-        console.error("CDPProvider: Missing writeKey");
+      if (!config.writeKey) {
+        console.error("CdpProvider: Missing writeKey");
         return;
       }
-      console.log("Initializing CDPProvider with writeKey:", writeKey);
-      HclCdp.init(writeKey, {}, (error, sessionData) => {
+      HclCdp.init(config, (error, sessionData) => {
         if (!error) {
           initialized.current = true;
-          console.log("CDPProvider initialized successfully:", sessionData);
           setIsReady(true);
           pageEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            console.log("Processing queued page event:", identifier);
             HclCdp.page(identifier, properties, otherIds);
           });
           pageEventQueue.current = [];
           trackEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            console.log("Processing queued track event:", identifier);
             HclCdp.track(identifier, properties, otherIds);
           });
           trackEventQueue.current = [];
           identifyEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            console.log("Processing queued identify event:", identifier);
             HclCdp.identify(identifier, properties, otherIds);
           });
           identifyEventQueue.current = [];
@@ -80,7 +77,7 @@ var CdpProvider = ({ writeKey, children }) => {
         }
       });
     }
-  }, [writeKey]);
+  }, [config.writeKey]);
   const page = ({ identifier = eventIdentifier, properties = pageProperties, otherIds = {} }) => {
     if (isReady) {
       HclCdp.page(identifier, properties, otherIds);
@@ -102,7 +99,12 @@ var CdpProvider = ({ writeKey, children }) => {
       identifyEventQueue.current.push({ identifier, properties, otherIds });
     }
   };
-  return /* @__PURE__ */ jsx2(CdpContextProvider, { children: /* @__PURE__ */ jsx2(CdpContext2.Provider, { value: { isReady, page, track, identify, setEventIdentifier, setPageProperties }, children }) });
+  const logout = () => {
+    if (isReady) {
+      HclCdp.logout();
+    }
+  };
+  return /* @__PURE__ */ jsx2(CdpContextProvider, { children: /* @__PURE__ */ jsx2(CdpContext2.Provider, { value: { isReady, page, track, identify, logout, setEventIdentifier, setPageProperties }, children }) });
 };
 var useCdp = () => useContext2(CdpContext2);
 
@@ -114,15 +116,14 @@ var CdpInitializer = () => {
   const isInitialized = useRef2(false);
   useEffect2(() => {
     if (!isInitialized.current && eventIdentifier !== "page") {
-      console.log("Calling page with identifier:", eventIdentifier);
       page({ identifier: eventIdentifier, properties: pageProperties, otherIds: {} });
       isInitialized.current = true;
     }
   }, [page, eventIdentifier, pageProperties]);
   return null;
 };
-var CdpClientWrapper = ({ writeKey, children }) => {
-  return /* @__PURE__ */ jsx3(CdpProvider, { writeKey, children: /* @__PURE__ */ jsxs(CdpContextProvider, { children: [
+var CdpClientWrapper = ({ config, children }) => {
+  return /* @__PURE__ */ jsx3(CdpProvider, { config, children: /* @__PURE__ */ jsxs(CdpContextProvider, { children: [
     /* @__PURE__ */ jsx3(CdpInitializer, {}),
     children
   ] }) });
@@ -135,7 +136,6 @@ var CdpPageEvent = ({ pageName = "page", pageProperties = {} }) => {
   useEffect3(() => {
     setEventIdentifier(pageName);
     setPageProperties(pageProperties);
-    console.log("CdpPage:", pageName, pageProperties);
   }, [setEventIdentifier, pageName, setPageProperties]);
   return null;
 };

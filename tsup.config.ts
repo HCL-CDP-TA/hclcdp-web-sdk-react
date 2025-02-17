@@ -8,4 +8,5 @@ export default defineConfig({
   skipNodeModulesBundle: true,
   splitting: false,
   clean: true,
+  watch: true,
 })

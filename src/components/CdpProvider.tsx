@@ -1,13 +1,14 @@
 "use client"
 import { createContext, useContext, useEffect, useState, ReactNode, useRef } from "react"
-import { HclCdp } from "hclcdp-web-sdk"
-import { CdpContextProvider } from "./CdpContext" // Import the context provider
+import { HclCdp, type HclCdpConfig } from "hclcdp-web-sdk"
+import { CdpContextProvider } from "./CdpContext"
 
 type CdpContextType = {
   isReady: boolean
   track: (event: EventObject) => void
   page: (event: EventObject) => void
   identify: (event: EventObject) => void
+  logout: () => void
   setEventIdentifier: React.Dispatch<React.SetStateAction<string>>
   setPageProperties: React.Dispatch<React.SetStateAction<Record<string, unknown>>>
 }
@@ -17,12 +18,13 @@ const CdpContext = createContext<CdpContextType>({
   page: () => {},
   track: () => {},
   identify: () => {},
+  logout: () => {},
   setEventIdentifier: () => {},
   setPageProperties: () => {},
 })
 
 type CdpProviderProps = {
-  writeKey: string
+  config: HclCdpConfig
   children: ReactNode
 }
 
@@ -32,7 +34,7 @@ export type EventObject = {
   otherIds?: Record<string, unknown>
 }
 
-export const CdpProvider = ({ writeKey, children }: CdpProviderProps) => {
+export const CdpProvider = ({ config, children }: CdpProviderProps) => {
   const [isReady, setIsReady] = useState(false)
   const [eventIdentifier, setEventIdentifier] = useState("page")
   const [pageProperties, setPageProperties] = useState({})
@@ -43,45 +45,40 @@ export const CdpProvider = ({ writeKey, children }: CdpProviderProps) => {
   const identifyEventQueue = useRef<EventObject[]>([])
 
   useEffect(() => {
-    if (typeof window === "undefined") return // Skip initialization on the server
+    if (typeof window === "undefined") return
 
     if (!initialized.current) {
-      if (!writeKey) {
-        console.error("CDPProvider: Missing writeKey")
+      if (!config.writeKey) {
+        console.error("CdpProvider: Missing writeKey")
         return
       }
 
-      console.log("Initializing CDPProvider with writeKey:", writeKey)
-      HclCdp.init(writeKey, {}, (error, sessionData) => {
+      HclCdp.init(config, (error, sessionData) => {
         if (!error) {
           initialized.current = true
-          console.log("CDPProvider initialized successfully:", sessionData)
           setIsReady(true)
 
           // Process queued events
           pageEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            console.log("Processing queued page event:", identifier)
             HclCdp.page(identifier, properties, otherIds)
           })
-          pageEventQueue.current = [] // Clear queue
+          pageEventQueue.current = []
 
           trackEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            console.log("Processing queued track event:", identifier)
             HclCdp.track(identifier, properties, otherIds)
           })
-          trackEventQueue.current = [] // Clear queue
+          trackEventQueue.current = []
 
           identifyEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            console.log("Processing queued identify event:", identifier)
             HclCdp.identify(identifier, properties, otherIds)
           })
-          identifyEventQueue.current = [] // Clear queue
+          identifyEventQueue.current = []
         } else {
           console.error("CDPProvider initialization failed:", error)
         }
       })
     }
-  }, [writeKey])
+  }, [config.writeKey])
 
   const page = ({ identifier = eventIdentifier, properties = pageProperties, otherIds = {} }: EventObject) => {
     if (isReady) {
@@ -107,9 +104,15 @@ export const CdpProvider = ({ writeKey, children }: CdpProviderProps) => {
     }
   }
 
+  const logout = () => {
+    if (isReady) {
+      HclCdp.logout()
+    }
+  }
+
   return (
     <CdpContextProvider>
-      <CdpContext.Provider value={{ isReady, page, track, identify, setEventIdentifier, setPageProperties }}>
+      <CdpContext.Provider value={{ isReady, page, track, identify, logout, setEventIdentifier, setPageProperties }}>
         {children}
       </CdpContext.Provider>
     </CdpContextProvider>

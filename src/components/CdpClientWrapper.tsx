@@ -1,16 +1,16 @@
 "use client"
 import { useEffect, useRef } from "react"
 import { CdpProvider, useCdp } from "./CdpProvider"
-import { CdpContextProvider, useCdpContext } from "./CdpContext" // Import CdpContextProvider
+import { CdpContextProvider, useCdpContext } from "./CdpContext"
+import { HclCdpConfig } from "hclcdp-web-sdk"
 
 const CdpInitializer = () => {
   const { page } = useCdp()
-  const { eventIdentifier, pageProperties } = useCdpContext() // Now this should work
+  const { eventIdentifier, pageProperties } = useCdpContext()
   const isInitialized = useRef(false)
 
   useEffect(() => {
     if (!isInitialized.current && eventIdentifier !== "page") {
-      console.log("Calling page with identifier:", eventIdentifier)
       page({ identifier: eventIdentifier, properties: pageProperties, otherIds: {} })
       isInitialized.current = true
     }
@@ -20,13 +20,13 @@ const CdpInitializer = () => {
 }
 
 type CdpClientWrapperProps = {
-  writeKey: string
+  config: HclCdpConfig
   children: React.ReactNode
 }
 
-export const CdpClientWrapper = ({ writeKey, children }: CdpClientWrapperProps) => {
+export const CdpClientWrapper = ({ config, children }: CdpClientWrapperProps) => {
   return (
-    <CdpProvider writeKey={writeKey}>
+    <CdpProvider config={config}>
       <CdpContextProvider>
         <CdpInitializer />
         {children}

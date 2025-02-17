@@ -13,8 +13,7 @@ export const CdpPageEvent = ({ pageName = "page", pageProperties = {} }: CdpPage
   useEffect(() => {
     setEventIdentifier(pageName)
     setPageProperties(pageProperties)
-    console.log("CdpPage:", pageName, pageProperties)
-  }, [setEventIdentifier, pageName, setPageProperties]) // Remove properties from dependencies
+  }, [setEventIdentifier, pageName, setPageProperties])
 
   return null
 }
