@@ -31,7 +31,7 @@ declare const CdpProvider: ({ config, children }: CdpProviderProps) => react_jsx
 declare const useCdp: () => CdpContextType;
 
 type CdpPageEventProps = {
-    pageName: string | undefined;
+    pageName?: string;
     pageProperties?: Record<string, any>;
 };
 declare const CdpPageEvent: ({ pageName, pageProperties }: CdpPageEventProps) => null;

@@ -1,19 +1,20 @@
 "use client"
-import { useCdpContext } from "./CdpContext"
+
 import { useEffect } from "react"
+import { useCdpContext } from "./CdpContext"
 
 type CdpPageEventProps = {
-  pageName: string | undefined
+  pageName?: string
   pageProperties?: Record<string, any>
 }
 
-export const CdpPageEvent = ({ pageName = "page", pageProperties = {} }: CdpPageEventProps) => {
+export const CdpPageEvent = ({ pageName, pageProperties = {} }: CdpPageEventProps) => {
   const { setEventIdentifier, setPageProperties } = useCdpContext()
 
   useEffect(() => {
-    setEventIdentifier(pageName)
+    setEventIdentifier(pageName || "")
     setPageProperties(pageProperties)
-  }, [setEventIdentifier, pageName, setPageProperties])
+  }, [pageName, pageProperties, setEventIdentifier, setPageProperties])
 
   return null
 }

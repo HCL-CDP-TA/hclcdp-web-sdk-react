@@ -10,7 +10,7 @@ const CdpInitializer = () => {
   const isInitialized = useRef(false)
 
   useEffect(() => {
-    if (!isInitialized.current && eventIdentifier !== "page") {
+    if (eventIdentifier !== "page") {
       page({ identifier: eventIdentifier, properties: pageProperties, otherIds: {} })
       isInitialized.current = true
     }
