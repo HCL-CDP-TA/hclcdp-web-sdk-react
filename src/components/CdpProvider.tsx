@@ -15,12 +15,12 @@ type CdpContextType = {
 
 const CdpContext = createContext<CdpContextType>({
   isReady: false,
-  page: () => {},
-  track: () => {},
-  identify: () => {},
-  logout: () => {},
-  setEventIdentifier: () => {},
-  setPageProperties: () => {},
+  page: function (_event: EventObject): void {},
+  track: function (_event: EventObject): void {},
+  identify: function (_event: EventObject): void {},
+  logout: function (): void {},
+  setEventIdentifier: (() => {}) as React.Dispatch<React.SetStateAction<string>>,
+  setPageProperties: (() => {}) as React.Dispatch<React.SetStateAction<Record<string, unknown>>>,
 })
 
 type CdpProviderProps = {

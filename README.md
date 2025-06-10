@@ -33,6 +33,18 @@ const config: HclCdpConfig = {
   enableSessionLogging: false,
   enableUserLogoutLogging: false,
   cdpEndpoint: "<endpoint>",
+  destinations: [
+    {
+      id: "GA4",
+      classRef: GoogleAnalytics,
+      config: { measurementId: "<measurementId>" },
+    },
+    {
+      id: "Facebook",
+      classRef: Facebook,
+      config: { pixelId: ",pixelId>" },
+    },
+  ],
 }
 
 export default function ReactLayout({

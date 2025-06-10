@@ -1,6 +1,6 @@
 {
   "name": "hclcdp-web-sdk-react",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "HCL CDP Web SDK React Wrapper",
   "keywords": [
     "HCLCDP"
@@ -25,13 +25,13 @@
     "build": "tsup"
   },
   "dependencies": {
-    "hclcdp-web-sdk": "^0.0.1",
+    "hclcdp-web-sdk": "^0.0.2",
     "react": "^19.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.8",
-    "typescript": "^5.7.3",
     "terser": "^5.39.0",
-    "tsup": "^8.3.6"
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3"
   }
 }
