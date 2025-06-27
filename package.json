@@ -22,10 +22,14 @@
     "require": "./dist/hclcdp-react.js"
   },
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "dev": "tsup --watch"
   },
   "dependencies": {
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "uuid": "^11.0.0",
+    "ua-parser-js": "^2.0.0",
+    "@hcl-cdp-ta/hclcdp-web-sdk": "^0.0.8"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
