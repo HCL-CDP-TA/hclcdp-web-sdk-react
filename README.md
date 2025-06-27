@@ -7,13 +7,13 @@ This repository contains the HCL CDP Web SDK for React, which provides a set of 
 To install the HCL CDP Web SDK for React, you can use npm or yarn:
 
 ```bash
-npm install hclcdp-web-sdk-react
+npm install @hcl-cdp-ta/hclcdp-web-sdk-react
 ```
 
 or
 
 ```bash
-yarn add hclcdp-web-sdk-react
+yarn add @hcl-cdp-ta/hclcdp-web-sdk-react
 ```
 
 ### Usage
@@ -25,7 +25,7 @@ Here's an example of how to use the HCL CDP Web SDK for React in a React compone
 This example will include the HCL CDP Web SDK for React in a Next.js application with the layout component (layout.tsx or layout.js). The \*_CdpClientWrapper_ is a client-side implementation of a React Context Provider that should be used to wrap around page content.
 
 ```typescript
-import { CdpClientWrapper, HclCdpConfig } from "hclcdp-web-sdk-react"
+import { CdpClientWrapper, HclCdpConfig } from "@hcl-cdp-ta/hclcdp-web-sdk-react"
 
 const config: HclCdpConfig = {
   writeKey: "<writekey>>",
@@ -71,7 +71,7 @@ The **identifier** parameter is the page name for page events, the event name fo
 ```typescript
 "use client"
 
-import { CdpPageEvent, useCdp } from "hclcdp-web-sdk-react"
+import { CdpPageEvent, useCdp } from "@hcl-cdp-ta/hclcdp-web-sdk"
 
 export default function Home() {
   const { track, identify } = useCdp()

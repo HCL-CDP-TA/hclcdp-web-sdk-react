@@ -1,6 +1,6 @@
 "use client"
 import { createContext, useContext, useEffect, useState, ReactNode, useRef } from "react"
-import { HclCdp, type HclCdpConfig } from "hclcdp-web-sdk"
+import { HclCdp, type HclCdpConfig } from "@hcl-cdp-ta/hclcdp-web-sdk"
 import { CdpContextProvider } from "./CdpContext"
 
 type CdpContextType = {

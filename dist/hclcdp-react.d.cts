@@ -1,5 +1,5 @@
-import { HclCdpConfig } from 'hclcdp-web-sdk';
-export { Facebook, GoogleAnalytics, HclCdpConfig } from 'hclcdp-web-sdk';
+import { HclCdpConfig } from '@hcl-cdp-ta/hclcdp-web-sdk';
+export { Facebook, GoogleAnalytics, HclCdpConfig } from '@hcl-cdp-ta/hclcdp-web-sdk';
 import * as react_jsx_runtime from 'react/jsx-runtime';
 import { ReactNode } from 'react';
 

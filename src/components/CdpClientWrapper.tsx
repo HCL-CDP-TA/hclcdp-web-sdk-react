@@ -2,7 +2,7 @@
 import { useEffect, useRef } from "react"
 import { CdpProvider, useCdp } from "./CdpProvider"
 import { CdpContextProvider, useCdpContext } from "./CdpContext"
-import { HclCdpConfig } from "hclcdp-web-sdk"
+import { HclCdpConfig } from "@hcl-cdp-ta/hclcdp-web-sdk"
 
 const CdpInitializer = () => {
   const { page } = useCdp()
