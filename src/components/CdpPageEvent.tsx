@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { useCdpContext } from "./CdpContext"
+import { useCdp } from "./CdpProvider"
 
 type CdpPageEventProps = {
   pageName?: string
@@ -9,25 +9,20 @@ type CdpPageEventProps = {
 }
 
 export const CdpPageEvent = ({ pageName, pageProperties = {} }: CdpPageEventProps) => {
-  const { setEventIdentifier, setPageProperties } = useCdpContext()
+  const { page } = useCdp()
   const lastPageName = useRef<string | undefined>(undefined)
   const lastPageProps = useRef<string | undefined>(undefined)
 
   useEffect(() => {
     const pagePropsString = JSON.stringify(pageProperties)
 
-    // Only update if pageName has changed
-    if (lastPageName.current !== pageName) {
-      setEventIdentifier(pageName || "")
+    // Only fire page event if pageName or pageProperties have changed
+    if (lastPageName.current !== pageName || lastPageProps.current !== pagePropsString) {
+      page({ identifier: pageName || "", properties: pageProperties, otherIds: {} })
       lastPageName.current = pageName
-    }
-
-    // Only update if pageProperties has changed
-    if (lastPageProps.current !== pagePropsString) {
-      setPageProperties(pageProperties)
       lastPageProps.current = pagePropsString
     }
-  }, [pageName, pageProperties, setEventIdentifier, setPageProperties])
+  }, [pageName, pageProperties, page])
 
   return null
 }
