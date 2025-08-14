@@ -3,6 +3,13 @@ import { createContext, useContext, useEffect, useState, ReactNode, useRef } fro
 import { HclCdp, type HclCdpConfig } from "@hcl-cdp-ta/hclcdp-web-sdk"
 import { CdpContextProvider } from "./CdpContext"
 
+// Temporary local definition until main SDK is updated
+export interface IdentityData {
+  profileId: string
+  deviceId: string
+  userId: string
+}
+
 type CdpContextType = {
   isReady: boolean
   track: (event: EventObject) => void
@@ -11,6 +18,10 @@ type CdpContextType = {
   logout: () => void
   setEventIdentifier: React.Dispatch<React.SetStateAction<string>>
   setPageProperties: React.Dispatch<React.SetStateAction<Record<string, unknown>>>
+  getIdentityData: () => IdentityData | null
+  getProfileId: () => string
+  getDeviceId: () => string
+  getUserId: () => string
 }
 
 const CdpContext = createContext<CdpContextType>({
@@ -21,6 +32,10 @@ const CdpContext = createContext<CdpContextType>({
   logout: function (): void {},
   setEventIdentifier: (() => {}) as React.Dispatch<React.SetStateAction<string>>,
   setPageProperties: (() => {}) as React.Dispatch<React.SetStateAction<Record<string, unknown>>>,
+  getIdentityData: () => null,
+  getProfileId: () => "",
+  getDeviceId: () => "",
+  getUserId: () => "",
 })
 
 type CdpProviderProps = {
@@ -110,9 +125,56 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
     }
   }
 
+  const getIdentityData = (): IdentityData | null => {
+    // Fallback implementation until main SDK is updated
+    if ((HclCdp as any).getIdentityData) {
+      return (HclCdp as any).getIdentityData()
+    }
+    return {
+      profileId: (HclCdp as any).getProfileId?.() || HclCdp.getDeviceId() || "",
+      deviceId: (HclCdp as any).getDeviceId?.() || "",
+      userId: (HclCdp as any).getUserId?.() || "",
+    }
+  }
+
+  const getProfileId = (): string => {
+    if ((HclCdp as any).getProfileId) {
+      return (HclCdp as any).getProfileId()
+    }
+    // Fallback to current deviceId until updated
+    return HclCdp.getDeviceId()
+  }
+
+  const getDeviceId = (): string => {
+    if ((HclCdp as any).getDeviceId) {
+      return (HclCdp as any).getDeviceId()
+    }
+    return ""
+  }
+
+  const getUserId = (): string => {
+    if ((HclCdp as any).getUserId) {
+      return (HclCdp as any).getUserId()
+    }
+    return ""
+  }
+
   return (
     <CdpContextProvider>
-      <CdpContext.Provider value={{ isReady, page, track, identify, logout, setEventIdentifier, setPageProperties }}>
+      <CdpContext.Provider
+        value={{
+          isReady,
+          page,
+          track,
+          identify,
+          logout,
+          setEventIdentifier,
+          setPageProperties,
+          getIdentityData,
+          getProfileId,
+          getDeviceId,
+          getUserId,
+        }}>
         {children}
       </CdpContext.Provider>
     </CdpContextProvider>

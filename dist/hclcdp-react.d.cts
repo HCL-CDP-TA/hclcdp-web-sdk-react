@@ -9,6 +9,11 @@ type CdpClientWrapperProps = {
 };
 declare const CdpClientWrapper: ({ config, children }: CdpClientWrapperProps) => react_jsx_runtime.JSX.Element;
 
+interface IdentityData {
+    profileId: string;
+    deviceId: string;
+    userId: string;
+}
 type CdpContextType = {
     isReady: boolean;
     track: (event: EventObject) => void;
@@ -17,6 +22,10 @@ type CdpContextType = {
     logout: () => void;
     setEventIdentifier: React.Dispatch<React.SetStateAction<string>>;
     setPageProperties: React.Dispatch<React.SetStateAction<Record<string, unknown>>>;
+    getIdentityData: () => IdentityData | null;
+    getProfileId: () => string;
+    getDeviceId: () => string;
+    getUserId: () => string;
 };
 type CdpProviderProps = {
     config: HclCdpConfig;
@@ -47,4 +56,4 @@ declare const CdpContextProvider: ({ children }: {
 }) => react_jsx_runtime.JSX.Element;
 declare const useCdpContext: () => CdpContextValue;
 
-export { CdpClientWrapper, CdpContextProvider, CdpPageEvent, CdpProvider, type EventObject, useCdp, useCdpContext };
+export { CdpClientWrapper, CdpContextProvider, CdpPageEvent, CdpProvider, type EventObject, type IdentityData, useCdp, useCdpContext };
