@@ -1,3 +1,5 @@
+[![Version](https://img.shields.io/github/v/release/HCL-CDP-TA/hclcdp-web-sdk-react)](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/releases)
+
 ## HCL CDP Web SDK for React
 
 This repository contains the HCL CDP Web SDK for React, which provides a set of tools and components to integrate with the HCL Customer Data Platform (CDP) in a React application.
