@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.0](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v0.0.19...v0.1.0) (2025-08-15)
+
+
+### Features
+
+* added enhanced session and identity observability and API access ([fec00d6](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/fec00d6a18a3e1731c7df4c5058d489dfe473e31))
+* added enhanced session and identity observability and API access ([eddbb07](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/eddbb07326bebb59d03e4e8ea07cab802d04e835))
+
 ## [0.0.19](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v0.0.18...v0.0.19) (2025-08-14)
 
 
