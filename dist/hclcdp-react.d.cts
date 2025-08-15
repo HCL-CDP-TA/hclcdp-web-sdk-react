@@ -14,6 +14,11 @@ interface IdentityData {
     deviceId: string;
     userId: string;
 }
+interface FullSessionData {
+    sessionId: string;
+    lastActivityTimestamp: number;
+    sessionStartTimestamp: number;
+}
 type CdpContextType = {
     isReady: boolean;
     track: (event: EventObject) => void;
@@ -23,9 +28,11 @@ type CdpContextType = {
     setEventIdentifier: React.Dispatch<React.SetStateAction<string>>;
     setPageProperties: React.Dispatch<React.SetStateAction<Record<string, unknown>>>;
     getIdentityData: () => IdentityData | null;
-    getProfileId: () => string;
-    getDeviceId: () => string;
-    getUserId: () => string;
+    getSessionData: () => FullSessionData | null;
+    setSessionLogging: (enabled: boolean) => void;
+    setUserLogoutLogging: (enabled: boolean) => void;
+    setInactivityTimeout: (timeoutMinutes: number) => void;
+    getConfig: () => any;
 };
 type CdpProviderProps = {
     config: HclCdpConfig;
@@ -56,4 +63,4 @@ declare const CdpContextProvider: ({ children }: {
 }) => react_jsx_runtime.JSX.Element;
 declare const useCdpContext: () => CdpContextValue;
 
-export { CdpClientWrapper, CdpContextProvider, CdpPageEvent, CdpProvider, type EventObject, type IdentityData, useCdp, useCdpContext };
+export { CdpClientWrapper, CdpContextProvider, CdpPageEvent, CdpProvider, type EventObject, type FullSessionData, type IdentityData, useCdp, useCdpContext };

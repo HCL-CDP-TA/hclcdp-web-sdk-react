@@ -10,6 +10,12 @@ export interface IdentityData {
   userId: string
 }
 
+export interface FullSessionData {
+  sessionId: string
+  lastActivityTimestamp: number
+  sessionStartTimestamp: number
+}
+
 type CdpContextType = {
   isReady: boolean
   track: (event: EventObject) => void
@@ -19,9 +25,11 @@ type CdpContextType = {
   setEventIdentifier: React.Dispatch<React.SetStateAction<string>>
   setPageProperties: React.Dispatch<React.SetStateAction<Record<string, unknown>>>
   getIdentityData: () => IdentityData | null
-  getProfileId: () => string
-  getDeviceId: () => string
-  getUserId: () => string
+  getSessionData: () => FullSessionData | null
+  setSessionLogging: (enabled: boolean) => void
+  setUserLogoutLogging: (enabled: boolean) => void
+  setInactivityTimeout: (timeoutMinutes: number) => void
+  getConfig: () => any
 }
 
 const CdpContext = createContext<CdpContextType>({
@@ -33,9 +41,11 @@ const CdpContext = createContext<CdpContextType>({
   setEventIdentifier: (() => {}) as React.Dispatch<React.SetStateAction<string>>,
   setPageProperties: (() => {}) as React.Dispatch<React.SetStateAction<Record<string, unknown>>>,
   getIdentityData: () => null,
-  getProfileId: () => "",
-  getDeviceId: () => "",
-  getUserId: () => "",
+  getSessionData: () => null,
+  setSessionLogging: () => {},
+  setUserLogoutLogging: () => {},
+  setInactivityTimeout: () => {},
+  getConfig: () => ({}),
 })
 
 type CdpProviderProps = {
@@ -126,37 +136,42 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
   }
 
   const getIdentityData = (): IdentityData | null => {
-    // Fallback implementation until main SDK is updated
     if ((HclCdp as any).getIdentityData) {
       return (HclCdp as any).getIdentityData()
     }
-    return {
-      profileId: (HclCdp as any).getProfileId?.() || HclCdp.getDeviceId() || "",
-      deviceId: (HclCdp as any).getDeviceId?.() || "",
-      userId: (HclCdp as any).getUserId?.() || "",
+    return null
+  }
+
+  const getSessionData = (): FullSessionData | null => {
+    if ((HclCdp as any).getSessionData) {
+      return (HclCdp as any).getSessionData()
+    }
+    return null
+  }
+
+  const setSessionLogging = (enabled: boolean): void => {
+    if ((HclCdp as any).setSessionLogging) {
+      ;(HclCdp as any).setSessionLogging(enabled)
     }
   }
 
-  const getProfileId = (): string => {
-    if ((HclCdp as any).getProfileId) {
-      return (HclCdp as any).getProfileId()
+  const setUserLogoutLogging = (enabled: boolean): void => {
+    if ((HclCdp as any).setUserLogoutLogging) {
+      ;(HclCdp as any).setUserLogoutLogging(enabled)
     }
-    // Fallback to current deviceId until updated
-    return HclCdp.getDeviceId()
   }
 
-  const getDeviceId = (): string => {
-    if ((HclCdp as any).getDeviceId) {
-      return (HclCdp as any).getDeviceId()
+  const setInactivityTimeout = (timeoutMinutes: number): void => {
+    if ((HclCdp as any).setInactivityTimeout) {
+      ;(HclCdp as any).setInactivityTimeout(timeoutMinutes)
     }
-    return ""
   }
 
-  const getUserId = (): string => {
-    if ((HclCdp as any).getUserId) {
-      return (HclCdp as any).getUserId()
+  const getConfig = (): any => {
+    if ((HclCdp as any).getConfig) {
+      return (HclCdp as any).getConfig()
     }
-    return ""
+    return {}
   }
 
   return (
@@ -171,9 +186,11 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
           setEventIdentifier,
           setPageProperties,
           getIdentityData,
-          getProfileId,
-          getDeviceId,
-          getUserId,
+          getSessionData,
+          setSessionLogging,
+          setUserLogoutLogging,
+          setInactivityTimeout,
+          getConfig,
         }}>
         {children}
       </CdpContext.Provider>
