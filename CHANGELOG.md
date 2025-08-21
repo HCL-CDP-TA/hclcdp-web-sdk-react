@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v0.1.2...v0.1.3) (2025-08-21)
+
+
+### Bug Fixes
+
+* add files field to ensure dist folder is included in npm package ([c0d8376](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/c0d83763ea62a371df92418439af71d480a10ea5))
+
 ## [0.1.2](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v0.1.1...v0.1.2) (2025-08-21)
 
 
