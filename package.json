@@ -16,6 +16,11 @@
   "license": "MIT",
   "author": "Simon Pallister, HCL Software",
   "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "main": "./dist/hclcdp-react.cjs",
   "module": "./dist/hclcdp-react.js",
   "types": "./dist/hclcdp-react.d.ts",
