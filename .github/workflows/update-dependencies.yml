@@ -1,0 +1,90 @@
+name: Update Core SDK Dependency
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC to check for new core SDK versions
+    - cron: "0 2 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-core-sdk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org/"
+
+      - name: Get current and latest versions
+        id: versions
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').dependencies['@hcl-cdp-ta/hclcdp-web-sdk']" | sed 's/[\^~]//g')
+          LATEST_VERSION=$(npm view @hcl-cdp-ta/hclcdp-web-sdk version)
+          echo "current=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "latest=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $CURRENT_VERSION"
+          echo "Latest version: $LATEST_VERSION"
+
+      - name: Check if update needed
+        id: check
+        run: |
+          if [ "${{ steps.versions.outputs.current }}" != "${{ steps.versions.outputs.latest }}" ]; then
+            echo "update_needed=true" >> $GITHUB_OUTPUT
+            echo "Update needed: ${{ steps.versions.outputs.current }} -> ${{ steps.versions.outputs.latest }}"
+          else
+            echo "update_needed=false" >> $GITHUB_OUTPUT
+            echo "No update needed, already on latest version"
+          fi
+
+      - name: Update dependency
+        if: steps.check.outputs.update_needed == 'true'
+        run: |
+          npm install @hcl-cdp-ta/hclcdp-web-sdk@^${{ steps.versions.outputs.latest }}
+
+      - name: Build and test
+        if: steps.check.outputs.update_needed == 'true'
+        run: |
+          npm ci
+          npm run build
+
+      - name: Create Pull Request
+        if: steps.check.outputs.update_needed == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update core SDK to v${{ steps.versions.outputs.latest }}"
+          title: "chore: update core SDK to v${{ steps.versions.outputs.latest }}"
+          body: |
+            ## 🚀 Core SDK Update
+
+            This PR automatically updates `@hcl-cdp-ta/hclcdp-web-sdk` from `v${{ steps.versions.outputs.current }}` to `v${{ steps.versions.outputs.latest }}`.
+
+            ### Changes
+            - Updated core SDK dependency to latest version
+            - Build completed successfully
+
+            ### What to do
+            - ✅ Review the changes
+            - ✅ Test locally if needed
+            - ✅ Merge when ready
+
+            ---
+            *This PR was created automatically by the dependency update workflow*
+          branch: update-core-sdk-v${{ steps.versions.outputs.latest }}
+          delete-branch: true
+
+      - name: Output result
+        run: |
+          if [ "${{ steps.check.outputs.update_needed }}" == "true" ]; then
+            echo "✅ Created PR to update core SDK to v${{ steps.versions.outputs.latest }}"
+          else
+            echo "✅ No update needed, already on latest version v${{ steps.versions.outputs.current }}"
+          fi
