@@ -11,9 +11,11 @@ export interface IdentityData {
 }
 
 export interface FullSessionData {
-  sessionId: string
+  deviceSessionId: string
+  userSessionId: string
   lastActivityTimestamp: number
   sessionStartTimestamp: number
+  userSessionStartTimestamp: number
 }
 
 type CdpContextType = {
@@ -21,12 +23,17 @@ type CdpContextType = {
   track: (event: EventObject) => void
   page: (event: EventObject) => void
   identify: (event: EventObject) => void
+  login: (event: EventObject) => void
   logout: () => void
   setEventIdentifier: React.Dispatch<React.SetStateAction<string>>
   setPageProperties: React.Dispatch<React.SetStateAction<Record<string, unknown>>>
   getIdentityData: () => IdentityData | null
   getSessionData: () => FullSessionData | null
+  getDeviceSessionId: () => string
+  getUserSessionId: () => string
   setSessionLogging: (enabled: boolean) => void
+  setDeviceSessionLogging: (enabled: boolean) => void
+  setUserSessionLogging: (enabled: boolean) => void
   setUserLogoutLogging: (enabled: boolean) => void
   setInactivityTimeout: (timeoutMinutes: number) => void
   getConfig: () => any
@@ -37,12 +44,17 @@ const CdpContext = createContext<CdpContextType>({
   page: function (_event: EventObject): void {},
   track: function (_event: EventObject): void {},
   identify: function (_event: EventObject): void {},
+  login: function (_event: EventObject): void {},
   logout: function (): void {},
   setEventIdentifier: (() => {}) as React.Dispatch<React.SetStateAction<string>>,
   setPageProperties: (() => {}) as React.Dispatch<React.SetStateAction<Record<string, unknown>>>,
   getIdentityData: () => null,
   getSessionData: () => null,
+  getDeviceSessionId: () => "",
+  getUserSessionId: () => "",
   setSessionLogging: () => {},
+  setDeviceSessionLogging: () => {},
+  setUserSessionLogging: () => {},
   setUserLogoutLogging: () => {},
   setInactivityTimeout: () => {},
   getConfig: () => ({}),
@@ -129,6 +141,19 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
     }
   }
 
+  const login = ({ identifier, properties = {}, otherIds = {} }: EventObject) => {
+    if (isReady) {
+      if ((HclCdp as any).login) {
+        ;(HclCdp as any).login(identifier, properties, otherIds)
+      } else {
+        // Fallback to identify if login method doesn't exist
+        HclCdp.identify(identifier, properties, otherIds)
+      }
+    } else {
+      identifyEventQueue.current.push({ identifier, properties, otherIds })
+    }
+  }
+
   const logout = () => {
     if (isReady) {
       HclCdp.logout()
@@ -149,9 +174,35 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
     return null
   }
 
+  const getDeviceSessionId = (): string => {
+    if ((HclCdp as any).getDeviceSessionId) {
+      return (HclCdp as any).getDeviceSessionId()
+    }
+    return ""
+  }
+
+  const getUserSessionId = (): string => {
+    if ((HclCdp as any).getUserSessionId) {
+      return (HclCdp as any).getUserSessionId()
+    }
+    return ""
+  }
+
   const setSessionLogging = (enabled: boolean): void => {
     if ((HclCdp as any).setSessionLogging) {
       ;(HclCdp as any).setSessionLogging(enabled)
+    }
+  }
+
+  const setDeviceSessionLogging = (enabled: boolean): void => {
+    if ((HclCdp as any).setDeviceSessionLogging) {
+      ;(HclCdp as any).setDeviceSessionLogging(enabled)
+    }
+  }
+
+  const setUserSessionLogging = (enabled: boolean): void => {
+    if ((HclCdp as any).setUserSessionLogging) {
+      ;(HclCdp as any).setUserSessionLogging(enabled)
     }
   }
 
@@ -182,12 +233,17 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
           page,
           track,
           identify,
+          login,
           logout,
           setEventIdentifier,
           setPageProperties,
           getIdentityData,
           getSessionData,
+          getDeviceSessionId,
+          getUserSessionId,
           setSessionLogging,
+          setDeviceSessionLogging,
+          setUserSessionLogging,
           setUserLogoutLogging,
           setInactivityTimeout,
           getConfig,
