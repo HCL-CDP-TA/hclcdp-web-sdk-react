@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.0.0](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v0.1.3...v1.0.0) (2025-08-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* replaced sessionId with userSessionId & deviceSessionId
+* replaced sessionId with userSessionId & deviceSessionId
+
+### Features
+
+* replaced sessionId with userSessionId & deviceSessionId ([2c012f7](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/2c012f71272494ebedb3dd563449ce986cf0f012))
+* replaced sessionId with userSessionId & deviceSessionId ([d1affc0](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/d1affc00e725d73c12df746b70f99b925d196b08))
+
+
+### Bug Fixes
+
+* type ([0b19a61](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/0b19a619b2ae49478db700505f165853f8e5e7af))
+
 ## [0.1.3](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v0.1.2...v0.1.3) (2025-08-21)
 
 
