@@ -36,7 +36,8 @@ const config: HclCdpConfig = {
   writeKey: "your-write-key",
   cdpEndpoint: "https://your-cdp-endpoint.com",
   inactivityTimeout: 30, // Session timeout in minutes
-  enableSessionLogging: true, // Track session start/end events
+  enableDeviceSessionLogging: true, // Track device session start/end events
+  enableUserSessionLogging: true, // Track user session start/end events
   enableUserLogoutLogging: true, // Track user logout events
   destinations: [
     {
@@ -70,7 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 import { useCdp, CdpPageEvent } from "@hcl-cdp-ta/hclcdp-web-sdk-react"
 
 export default function ProductPage() {
-  const { track, identify, getIdentityData, getSessionData } = useCdp()
+  const { track, identify, login, logout, getIdentityData, getSessionData } = useCdp()
 
   const handlePurchase = () => {
     track({
@@ -84,7 +85,7 @@ export default function ProductPage() {
   }
 
   const handleLogin = () => {
-    identify({
+    login({
       identifier: "user-456",
       properties: {
         email: "user@example.com",
@@ -118,14 +119,19 @@ const {
   track,
   page,
   identify,
+  login,
   logout,
 
   // Data access methods
   getIdentityData,
   getSessionData,
+  getDeviceSessionId,
+  getUserSessionId,
 
   // Runtime configuration
-  setSessionLogging,
+  setSessionLogging, // deprecated
+  setDeviceSessionLogging,
+  setUserSessionLogging,
   setUserLogoutLogging,
   setInactivityTimeout,
   getConfig,
@@ -133,6 +139,33 @@ const {
   // State
   isReady,
 } = useCdp()
+```
+
+#### Automatic Cookie Collection
+
+The SDK automatically collects common tracking cookies and includes them in the `otherIds` section of all events:
+
+- **`_ga`** - Google Analytics client ID
+- **`_fbc`** - Facebook Click ID
+- **`_fbp`** - Facebook Browser ID
+- **`mcmid`** - Adobe Marketing Cloud ID
+
+These cookies are automatically merged with any manually provided `otherIds`, with manual values taking precedence.
+
+```typescript
+// Automatic cookies included even with empty otherIds
+track({
+  identifier: "Purchase",
+  properties: { value: 99.99 },
+  otherIds: {},
+})
+
+// Manual otherIds merged with automatic cookies
+track({
+  identifier: "Purchase",
+  properties: { value: 99.99 },
+  otherIds: { custom_id: "abc123" },
+})
 ```
 
 #### Event Methods
@@ -172,7 +205,7 @@ page({
 
 ##### `identify(event)`
 
-Associate events with specific users.
+Associate events with specific users. **Does not create a new user session** - keeps existing session IDs.
 
 ```typescript
 identify({
@@ -185,13 +218,44 @@ identify({
 })
 ```
 
+##### `login(event)`
+
+Start a new user session and identify the user (combines identify + new user session). **Creates a new user session ID** while preserving the device session.
+
+```typescript
+login({
+  identifier: "user-789",
+  properties: {
+    email: "user@example.com",
+    login_method: "social",
+    tier: "premium",
+  },
+})
+```
+
 ##### `logout()`
 
-Clear user identity and start a fresh session.
+Clear user identity and start a new user session (device session continues).
 
 ```typescript
 logout()
 ```
+
+#### When to Use identify() vs login()
+
+**Use `identify()` when:**
+
+- User updates their profile information
+- You want to associate events with a user without changing sessions
+- Tracking user behavior within the same session
+- User hasn't actually "logged in" but you know who they are (e.g., from cookies)
+
+**Use `login()` when:**
+
+- User enters credentials and authenticates
+- Starting a fresh user session after login
+- You want session analytics to reflect authentication events
+- User switches between accounts
 
 #### Data Access Methods
 
@@ -210,15 +274,35 @@ const identity = getIdentityData()
 
 ##### `getSessionData()`
 
-Get current session information with timestamps.
+Get current session information with timestamps for both device and user sessions.
 
 ```typescript
 const session = getSessionData()
 // {
-//   sessionId: "sess_def456",
+//   deviceSessionId: "dev_sess_abc123",
+//   userSessionId: "user_sess_def456",
 //   sessionStartTimestamp: 1640995200000,
+//   userSessionStartTimestamp: 1640996100000,
 //   lastActivityTimestamp: 1640998800000
 // }
+```
+
+##### `getDeviceSessionId()`
+
+Get the current device session ID (persists across login/logout).
+
+```typescript
+const deviceSessionId = getDeviceSessionId()
+// "dev_sess_abc123"
+```
+
+##### `getUserSessionId()`
+
+Get the current user session ID (changes on login/logout).
+
+```typescript
+const userSessionId = getUserSessionId()
+// "user_sess_def456"
 ```
 
 #### Runtime Configuration Methods
@@ -490,6 +574,134 @@ const trackEvent: EventObject = {
   },
 }
 ```
+
+## Breaking Changes in v1.0.0
+
+### Dual Session Architecture
+
+- **Device Sessions**: Persist across login/logout events
+- **User Sessions**: Reset on login/logout events
+- Event payloads now include both `deviceSessionId` and `userSessionId`
+
+### Event Payload Structure Changes
+
+Session IDs moved from root level to nested `context.session` object:
+
+**v0.x Format:**
+
+```javascript
+{
+  sessionId: "sess_123",
+  context: { /* other context */ }
+}
+```
+
+**v1.0.0 Format:**
+
+```javascript
+{
+  context: {
+    session: {
+      deviceSessionId: "dev_sess_123",
+      userSessionId: "user_sess_456"
+    }
+  }
+}
+```
+
+### Configuration Changes
+
+New session logging options:
+
+```javascript
+const config = {
+  enableSessionLogging: true, // Still available (logs both)
+  enableDeviceSessionLogging: true, // New: device sessions only
+  enableUserSessionLogging: true, // New: user sessions only
+}
+```
+
+### API Method Changes
+
+- `getSessionData()` now returns both device and user session information
+- Added `getDeviceSessionId()` for device session access
+- Added `getUserSessionId()` for user session access
+- Added `login(event)` method for user authentication flow
+
+## Migration Guide
+
+### Step 1: Update Package Version
+
+```bash
+npm install @hcl-cdp-ta/hclcdp-web-sdk-react@1.0.0
+```
+
+### Step 2: Update Session Data Access
+
+**Before (v0.x):**
+
+```javascript
+const session = getSessionData()
+const sessionId = session.sessionId
+```
+
+**After (v1.0.0):**
+
+```javascript
+const session = getSessionData()
+const deviceSessionId = session.deviceSessionId
+const userSessionId = session.userSessionId
+
+// Or use specific getters
+const deviceSessionId = getDeviceSessionId()
+const userSessionId = getUserSessionId()
+```
+
+### Step 3: Update Authentication Flow
+
+**Before (v0.x):**
+
+```javascript
+// Login
+identify({ identifier: "user123", properties: {...} })
+
+// Logout
+// No specific logout method
+```
+
+**After (v1.0.0):**
+
+```javascript
+// Login - creates new user session
+login({ identifier: "user123", properties: {...} })
+
+// Logout - clears user session
+logout()
+```
+
+### Step 4: Update Session Logging Configuration
+
+**Before (v0.x):**
+
+```javascript
+const config = {
+  enableSessionLogging: true,
+}
+```
+
+**After (v1.0.0):**
+
+```javascript
+const config = {
+  enableSessionLogging: true, // Logs both session types
+  enableDeviceSessionLogging: true, // Optional: device only
+  enableUserSessionLogging: true, // Optional: user only
+}
+```
+
+### Step 5: Test Event Payloads
+
+Verify that your event processing systems handle the new nested session structure in `context.session`.
 
 ## Related Packages
 
