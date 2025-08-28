@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.0.1...v1.1.0) (2025-08-28)
+
+
+### Features
+
+* improved session management from SDK v1.1.0 and new hooks to expose new callbacks for session end ([ba86dbb](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/ba86dbb42713f6278032140d1e019149af4f4bb7))
+
 ## [1.0.1](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.0.0...v1.0.1) (2025-08-26)
 
 
