@@ -7,6 +7,7 @@ React wrapper and hooks for the HCL Customer Data Platform (CDP) Web SDK, provid
 ## Features
 
 - **React Hooks**: Simple `useCdp()` hook for accessing CDP functionality
+- **Session Lifecycle Hooks**: `useSessionEnd()` hook for handling session events
 - **Context Provider**: `CdpProvider` for application-wide CDP integration
 - **Auto Page Tracking**: `CdpPageEvent` component for declarative page tracking
 - **Runtime Configuration**: Dynamic settings without reinitialization
@@ -63,6 +64,88 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   )
 }
 ```
+
+## Session End Callbacks
+
+For React applications, there are **two ways** to handle session end events:
+
+### Method 1: Using the `useSessionEnd` Hook (Recommended for React)
+
+The `useSessionEnd` hook provides a React-friendly way to handle session lifecycle events:
+
+```typescript
+"use client"
+import { useSessionEnd } from "@hcl-cdp-ta/hclcdp-web-sdk-react"
+
+function SessionHandler() {
+  useSessionEnd({
+    onDeviceSessionEnd: sessionData => {
+      console.log("Device session ended:", sessionData)
+      // { deviceSessionId: "dev_123", userSessionId: "user_456", reason: "timeout" }
+    },
+    onUserSessionEnd: sessionData => {
+      console.log("User session ended:", sessionData)
+      // { deviceSessionId: "dev_123", userSessionId: "user_456", reason: "login" | "logout" | "timeout" }
+
+      if (sessionData.reason === "timeout") {
+        alert("Your session has expired due to inactivity")
+      }
+    },
+  })
+
+  return null // This component only handles side effects
+}
+
+// Use it in your app layout or any component
+export default function App() {
+  return (
+    <CdpProvider config={config}>
+      <SessionHandler />
+      {/* Your other components */}
+    </CdpProvider>
+  )
+}
+```
+
+**Benefits of the hook approach:**
+
+- More React-like and composable
+- Multiple components can use the hook independently
+- Easier to test
+- No serialization issues with Next.js
+- Better separation of concerns
+
+### Method 2: Config-based Callbacks (For Non-React or Simple Cases)
+
+For vanilla JavaScript use or simple scenarios, you can add callbacks to your configuration:
+
+```typescript
+const config: HclCdpConfig = {
+  writeKey: "your-write-key",
+  cdpEndpoint: "https://your-cdp-endpoint.com",
+
+  // Called when a device session ends (due to inactivity timeout)
+  onDeviceSessionEnd: sessionData => {
+    console.log("Device session ended:", sessionData)
+  },
+
+  // Called when a user session ends (login, logout, or timeout)
+  onUserSessionEnd: sessionData => {
+    console.log("User session ended:", sessionData)
+    if (sessionData.reason === "timeout") {
+      showSessionTimeoutModal()
+    }
+  },
+}
+```
+
+**Note:** In React applications, prefer the `useSessionEnd` hook over config callbacks to avoid issues with Next.js Server Components.
+
+### Session End Reasons
+
+- **`timeout`**: Session ended due to inactivity timeout
+- **`login`**: User session ended because user logged in (starts new user session)
+- **`logout`**: User session ended because user logged out
 
 ### 2. Use CDP in Your Components
 
@@ -343,6 +426,55 @@ const config = getConfig()
 // Returns current HclCdpConfig object
 ```
 
+### `useSessionEnd()` Hook
+
+React hook for handling session lifecycle events. This is the **recommended approach** for React applications.
+
+```typescript
+import { useSessionEnd } from "@hcl-cdp-ta/hclcdp-web-sdk-react"
+
+useSessionEnd({
+  onDeviceSessionEnd?: (sessionData: SessionEndData) => void
+  onUserSessionEnd?: (sessionData: SessionEndData) => void
+})
+```
+
+**Parameters:**
+
+- `onDeviceSessionEnd` (optional): Callback when device session ends (usually timeout)
+- `onUserSessionEnd` (optional): Callback when user session ends (login/logout/timeout)
+
+**SessionEndData interface:**
+
+```typescript
+interface SessionEndData {
+  deviceSessionId: string
+  userSessionId: string
+  reason: "timeout" | "login" | "logout"
+}
+```
+
+**Example:**
+
+```typescript
+"use client"
+import { useSessionEnd } from "@hcl-cdp-ta/hclcdp-web-sdk-react"
+
+function SessionManager() {
+  useSessionEnd({
+    onUserSessionEnd: sessionData => {
+      if (sessionData.reason === "timeout") {
+        // Handle session timeout
+        showSessionExpiredDialog()
+        redirectToLogin()
+      }
+    },
+  })
+
+  return null
+}
+```
+
 ### `<CdpPageEvent>` Component
 
 Declarative component for automatic page tracking.
@@ -555,6 +687,7 @@ Full TypeScript support with comprehensive type definitions:
 ```typescript
 import {
   useCdp,
+  useSessionEnd,
   CdpProvider,
   CdpPageEvent,
   EventObject,
