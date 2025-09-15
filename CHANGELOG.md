@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.1.0...v1.1.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* udpated sdk to 1.1.1 ([f3e32b2](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/f3e32b2e4d8732a039bcbef5cd898cdbd0e3c10f))
+
 ## [1.1.0](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.0.1...v1.1.0) (2025-08-28)
 
 
