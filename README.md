@@ -848,6 +848,23 @@ Verify that your event processing systems handle the new nested session structur
 - Next.js 12+ (for Next.js projects)
 - TypeScript 4.0+ (for TypeScript projects)
 
+## Contributing
+
+We welcome contributions! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on:
+
+- **Commit Message Format**: This project uses [Conventional Commits](https://www.conventionalcommits.org/)
+- **Automated Validation**: Commit messages are validated locally and in CI/CD
+- **Release Process**: Automatic versioning and changelog generation via Release Please
+
+Quick reference for commit types:
+
+- `feat:` - New feature (minor version bump)
+- `fix:` - Bug fix (patch version bump)
+- `feat!:` or `BREAKING CHANGE:` - Breaking change (major version bump)
+- `docs:`, `style:`, `refactor:`, `perf:`, `test:`, `build:`, `ci:`, `chore:`
+
+Example: `feat: add useSessionEnd hook`
+
 ## License
 
 This project is licensed under the MIT License.
