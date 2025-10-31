@@ -36,7 +36,7 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "@hcl-cdp-ta/hclcdp-web-sdk": "^1.1.1",
+    "@hcl-cdp-ta/hclcdp-web-sdk": "^1.1.2",
     "react": "^19.0.0",
     "ua-parser-js": "^2.0.0",
     "uuid": "^11.0.0"

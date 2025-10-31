@@ -115,6 +115,8 @@ export default function App() {
 - No serialization issues with Next.js
 - Better separation of concerns
 
+**Note on Session Renewal:** The SDK automatically creates a new session if an event is tracked after a session expires. You don't need to manually create sessions - just handle the session end events if you need to notify users or take specific actions.
+
 ### Method 2: Config-based Callbacks (For Non-React or Simple Cases)
 
 For vanilla JavaScript use or simple scenarios, you can add callbacks to your configuration:
