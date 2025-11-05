@@ -37,7 +37,7 @@
     "prepare": "husky || true"
   },
   "dependencies": {
-    "@hcl-cdp-ta/hclcdp-web-sdk": "^1.1.2",
+    "@hcl-cdp-ta/hclcdp-web-sdk": "^1.2.0",
     "react": "^19.0.0",
     "ua-parser-js": "^2.0.0",
     "uuid": "^11.0.0"
