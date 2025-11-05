@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.1.1...v1.1.2) (2025-10-31)
+
+
+### Bug Fixes
+
+* create new session when one expires through inactivity ([bd31e64](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/bd31e6494b13d54778f20b937f1366349c484b78))
+
 ## [1.1.1](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.1.0...v1.1.1) (2025-09-15)
 
 
