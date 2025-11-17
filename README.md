@@ -28,8 +28,9 @@ yarn add @hcl-cdp-ta/hclcdp-web-sdk-react
 
 ### 1. Wrap Your App with CdpProvider
 
+#### Next.js App Router (app/layout.tsx)
+
 ```typescript
-// app/layout.tsx (Next.js App Router)
 import { CdpProvider, HclCdpConfig } from "@hcl-cdp-ta/hclcdp-web-sdk-react"
 import { GoogleAnalytics, Facebook } from "@hcl-cdp-ta/hclcdp-web-sdk"
 
@@ -63,6 +64,68 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
+```
+
+#### Next.js Page Router (pages/\_app.tsx)
+
+```typescript
+// pages/_app.tsx
+import { CdpProvider, HclCdpConfig } from "@hcl-cdp-ta/hclcdp-web-sdk-react"
+import { GoogleAnalytics, Facebook } from "@hcl-cdp-ta/hclcdp-web-sdk"
+
+const config: HclCdpConfig = {
+  writeKey: "your-write-key",
+  cdpEndpoint: "https://your-cdp-endpoint.com",
+  inactivityTimeout: 30,
+  enableDeviceSessionLogging: true,
+  enableUserSessionLogging: true,
+  enableUserLogoutLogging: true,
+  destinations: [
+    { id: "GA4", classRef: GoogleAnalytics, config: { measurementId: "G-XXXXXXXXXX" } },
+    { id: "Facebook", classRef: Facebook, config: { pixelId: "your-pixel-id" } },
+  ],
+}
+
+export default function MyApp({ Component, pageProps }) {
+  return (
+    <CdpProvider config={config}>
+      <Component {...pageProps} />
+    </CdpProvider>
+  )
+}
+```
+
+#### Vanilla React (e.g. Create React App, Vite, etc.)
+
+```typescript
+// src/index.tsx or src/main.tsx
+import React from "react"
+import ReactDOM from "react-dom/client"
+import App from "./App"
+import { CdpProvider, HclCdpConfig } from "@hcl-cdp-ta/hclcdp-web-sdk-react"
+import { GoogleAnalytics, Facebook } from "@hcl-cdp-ta/hclcdp-web-sdk"
+
+const config: HclCdpConfig = {
+  writeKey: "your-write-key",
+  cdpEndpoint: "https://your-cdp-endpoint.com",
+  inactivityTimeout: 30,
+  enableDeviceSessionLogging: true,
+  enableUserSessionLogging: true,
+  enableUserLogoutLogging: true,
+  destinations: [
+    { id: "GA4", classRef: GoogleAnalytics, config: { measurementId: "G-XXXXXXXXXX" } },
+    { id: "Facebook", classRef: Facebook, config: { pixelId: "your-pixel-id" } },
+  ],
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"))
+root.render(
+  <React.StrictMode>
+    <CdpProvider config={config}>
+      <App />
+    </CdpProvider>
+  </React.StrictMode>,
+)
 ```
 
 ## Session End Callbacks
