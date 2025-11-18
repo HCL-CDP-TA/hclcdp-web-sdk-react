@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useCdp } from "./CdpProvider"
 
 type CdpPageEventProps = {
@@ -12,8 +12,17 @@ export const CdpPageEvent = ({ pageName, pageProperties = {} }: CdpPageEventProp
   const { page } = useCdp()
   const lastPageName = useRef<string | undefined>(undefined)
   const lastPageProps = useRef<string | undefined>(undefined)
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Detect client-side mounting
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   useEffect(() => {
+    // Only track page events on the client side
+    if (!isMounted || typeof window === "undefined") return
+
     const pagePropsString = JSON.stringify(pageProperties)
 
     // Only fire page event if pageName or pageProperties have changed
@@ -22,7 +31,7 @@ export const CdpPageEvent = ({ pageName, pageProperties = {} }: CdpPageEventProp
       lastPageName.current = pageName
       lastPageProps.current = pagePropsString
     }
-  }, [pageName, pageProperties, page])
+  }, [pageName, pageProperties, page, isMounted])
 
   return null
 }

@@ -907,9 +907,28 @@ Verify that your event processing systems handle the new nested session structur
 
 ### SSR and Server Components
 
-**As of v1.2.0+**, `CdpProvider` automatically handles server-side rendering (SSR) by detecting the environment and only initializing on the client side. No additional wrapper components are needed.
+**As of v1.2.0+**, both `CdpProvider` and `CdpPageEvent` automatically handle server-side rendering (SSR) by detecting the environment and only initializing/tracking on the client side. No additional wrapper components are needed.
 
-The provider uses an internal `isMounted` state to ensure the SDK only initializes after the component has mounted in the browser, preventing "Cannot read properties of null (reading 'useState')" errors in Next.js Page Router and other SSR frameworks.
+Both components use an internal `isMounted` state to ensure the SDK only initializes and tracks events after the component has mounted in the browser, preventing SSR errors in Next.js and other frameworks.
+
+**You can use `CdpPageEvent` directly in server components:**
+
+```tsx
+// app/my-page/page.tsx (Server Component)
+import { CdpPageEvent } from "@hcl-cdp-ta/hclcdp-web-sdk-react"
+
+export default function MyServerPage() {
+  return (
+    <>
+      <CdpPageEvent pageName="My Server Page" pageProperties={{ section: "main" }} />
+      <h1>Server Component Content</h1>
+      {/* Rest of your server component */}
+    </>
+  )
+}
+```
+
+The component will render safely during SSR and automatically track the page event once it mounts on the client.
 
 ## Related Packages
 
