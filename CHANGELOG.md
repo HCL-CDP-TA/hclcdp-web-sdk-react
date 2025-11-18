@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.2.0...v1.3.0) (2025-11-18)
+
+
+### Features
+
+* added public flushqueue ([36e0359](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/36e0359b4f1fc7abd982ab6e65edb6f54b09a1da))
+
 ## [1.2.0](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.1.5...v1.2.0) (2025-11-18)
 
 
