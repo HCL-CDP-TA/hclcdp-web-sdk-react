@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.1.4...v1.1.5) (2025-11-18)
+
+
+### Bug Fixes
+
+* change React to peerDependency to prevent duplicate React instances causing SSR errors ([d4382af](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/d4382afb9944f22efe2abfb75ceaf0c8217c140b))
+
 ## [1.1.4](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.1.3...v1.1.4) (2025-11-18)
 
 
