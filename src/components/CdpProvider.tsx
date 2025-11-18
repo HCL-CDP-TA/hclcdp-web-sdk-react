@@ -80,10 +80,6 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
   const [pageProperties, setPageProperties] = useState({})
   const initialized = useRef(false)
 
-  const pageEventQueue = useRef<EventObject[]>([])
-  const trackEventQueue = useRef<EventObject[]>([])
-  const identifyEventQueue = useRef<EventObject[]>([])
-
   // Detect if we're on the client side
   useEffect(() => {
     setIsMounted(true)
@@ -103,22 +99,7 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
         if (!error) {
           initialized.current = true
           setIsReady(true)
-
-          // Process queued events
-          pageEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            HclCdp.page(identifier, properties, otherIds)
-          })
-          pageEventQueue.current = []
-
-          trackEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            HclCdp.track(identifier, properties, otherIds)
-          })
-          trackEventQueue.current = []
-
-          identifyEventQueue.current.forEach(({ identifier, properties, otherIds }) => {
-            HclCdp.identify(identifier, properties, otherIds)
-          })
-          identifyEventQueue.current = []
+          // SDK's EventQueue automatically flushes during init - no need to process queue here
         } else {
           console.error("CDPProvider initialization failed:", error)
         }
@@ -127,39 +108,27 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
   }, [config.writeKey, isMounted])
 
   const page = ({ identifier = eventIdentifier, properties = pageProperties, otherIds = {} }: EventObject) => {
-    if (isReady) {
-      HclCdp.page(identifier, properties, otherIds)
-    } else {
-      pageEventQueue.current.push({ identifier, properties, otherIds })
-    }
+    // SDK handles queuing internally if not initialized yet
+    HclCdp.page(identifier, properties, otherIds)
   }
 
   const track = ({ identifier, properties = {}, otherIds = {} }: EventObject) => {
-    if (isReady) {
-      HclCdp.track(identifier, properties, otherIds)
-    } else {
-      trackEventQueue.current.push({ identifier, properties, otherIds })
-    }
+    // SDK handles queuing internally if not initialized yet
+    HclCdp.track(identifier, properties, otherIds)
   }
 
   const identify = ({ identifier, properties = {}, otherIds = {} }: EventObject) => {
-    if (isReady) {
-      HclCdp.identify(identifier, properties, otherIds)
-    } else {
-      identifyEventQueue.current.push({ identifier, properties, otherIds })
-    }
+    // SDK handles queuing internally if not initialized yet
+    HclCdp.identify(identifier, properties, otherIds)
   }
 
   const login = ({ identifier, properties = {}, otherIds = {} }: EventObject) => {
-    if (isReady) {
-      if ((HclCdp as any).login) {
-        ;(HclCdp as any).login(identifier, properties, otherIds)
-      } else {
-        // Fallback to identify if login method doesn't exist
-        HclCdp.identify(identifier, properties, otherIds)
-      }
+    // SDK handles queuing internally if not initialized yet
+    if ((HclCdp as any).login) {
+      ;(HclCdp as any).login(identifier, properties, otherIds)
     } else {
-      identifyEventQueue.current.push({ identifier, properties, otherIds })
+      // Fallback to identify if login method doesn't exist
+      HclCdp.identify(identifier, properties, otherIds)
     }
   }
 
