@@ -73,6 +73,7 @@ export type EventObject = {
 
 export const CdpProvider = ({ config, children }: CdpProviderProps) => {
   const [isReady, setIsReady] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const [eventIdentifier, setEventIdentifier] = useState("page")
   const [pageProperties, setPageProperties] = useState({})
   const initialized = useRef(false)
@@ -81,8 +82,14 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
   const trackEventQueue = useRef<EventObject[]>([])
   const identifyEventQueue = useRef<EventObject[]>([])
 
+  // Detect if we're on the client side
   useEffect(() => {
-    if (typeof window === "undefined") return
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    // Only initialize if we're mounted (client-side)
+    if (!isMounted || typeof window === "undefined") return
 
     if (!initialized.current) {
       if (!config.writeKey) {
@@ -115,7 +122,7 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
         }
       })
     }
-  }, [config.writeKey])
+  }, [config.writeKey, isMounted])
 
   const page = ({ identifier = eventIdentifier, properties = pageProperties, otherIds = {} }: EventObject) => {
     if (isReady) {
@@ -225,6 +232,7 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
     return {}
   }
 
+  // Always render with context, but only initialize CDP on client
   return (
     <CdpContextProvider>
       <CdpContext.Provider

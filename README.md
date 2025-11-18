@@ -95,6 +95,8 @@ export default function MyApp({ Component, pageProps }) {
 }
 ```
 
+**Note:** `CdpProvider` automatically handles SSR by detecting when it's running on the server and only initializing on the client side.
+
 #### Vanilla React (e.g. Create React App, Vite, etc.)
 
 ```typescript
@@ -900,6 +902,14 @@ const config = {
 ### Step 5: Test Event Payloads
 
 Verify that your event processing systems handle the new nested session structure in `context.session`.
+
+## Troubleshooting
+
+### SSR and Server Components
+
+**As of v1.2.0+**, `CdpProvider` automatically handles server-side rendering (SSR) by detecting the environment and only initializing on the client side. No additional wrapper components are needed.
+
+The provider uses an internal `isMounted` state to ensure the SDK only initializes after the component has mounted in the browser, preventing "Cannot read properties of null (reading 'useState')" errors in Next.js Page Router and other SSR frameworks.
 
 ## Related Packages
 
