@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.1.5...v1.2.0) (2025-11-18)
+
+
+### Features
+
+* enable CdpPageEvent usage in server components ([41f12b9](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/41f12b9ec664a7cd34424655d790418abaec284a))
+
 ## [1.1.5](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.1.4...v1.1.5) (2025-11-18)
 
 
