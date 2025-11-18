@@ -562,6 +562,8 @@ Declarative component for automatic page tracking.
 - `pageName` (string): Name of the page for tracking
 - `pageProperties` (object, optional): Additional page-specific properties
 
+**Important:** While `CdpPageEvent` can be safely included in server components (it won't cause SSR errors), the actual page tracking only occurs client-side after the component mounts in the browser. This is intentional, as page tracking requires browser APIs like cookies, localStorage, and user session data that are only available on the client.
+
 ### `<CdpProvider>` Component
 
 Context provider that initializes and manages the CDP SDK.

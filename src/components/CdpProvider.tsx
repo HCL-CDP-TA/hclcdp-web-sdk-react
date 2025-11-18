@@ -25,6 +25,7 @@ type CdpContextType = {
   identify: (event: EventObject) => void
   login: (event: EventObject) => void
   logout: () => void
+  flushQueue: () => void
   setEventIdentifier: React.Dispatch<React.SetStateAction<string>>
   setPageProperties: React.Dispatch<React.SetStateAction<Record<string, unknown>>>
   getIdentityData: () => IdentityData | null
@@ -46,6 +47,7 @@ const CdpContext = createContext<CdpContextType>({
   identify: function (_event: EventObject): void {},
   login: function (_event: EventObject): void {},
   logout: function (): void {},
+  flushQueue: function (): void {},
   setEventIdentifier: (() => {}) as React.Dispatch<React.SetStateAction<string>>,
   setPageProperties: (() => {}) as React.Dispatch<React.SetStateAction<Record<string, unknown>>>,
   getIdentityData: () => null,
@@ -167,6 +169,12 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
     }
   }
 
+  const flushQueue = () => {
+    if ((HclCdp as any).flushQueue) {
+      ;(HclCdp as any).flushQueue()
+    }
+  }
+
   const getIdentityData = (): IdentityData | null => {
     if ((HclCdp as any).getIdentityData) {
       return (HclCdp as any).getIdentityData()
@@ -243,6 +251,7 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
           identify,
           login,
           logout,
+          flushQueue,
           setEventIdentifier,
           setPageProperties,
           getIdentityData,
