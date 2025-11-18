@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.3.1...v1.3.2) (2025-11-18)
+
+
+### Bug Fixes
+
+* session timing & queue fixes ([866620e](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/866620e9f7612b9ec8040ff954eb66ce88fb6838))
+
 ## [1.3.1](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.3.0...v1.3.1) (2025-11-18)
 
 
