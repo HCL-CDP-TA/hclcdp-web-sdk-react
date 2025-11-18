@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.1.3...v1.1.4) (2025-11-18)
+
+
+### Bug Fixes
+
+* add built-in SSR detection to CdpProvider to prevent useState errors in Next.js Page Router ([aac0d77](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/aac0d77be5879bca746036f6310356a5769f70c8))
+
 ## [1.1.3](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.1.2...v1.1.3) (2025-11-05)
 
 
