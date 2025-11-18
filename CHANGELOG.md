@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.3.0...v1.3.1) (2025-11-18)
+
+
+### Bug Fixes
+
+* exclude release.sh from build ([d7d45d6](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/d7d45d644ec980bc2f6f741048d562b67b6584e8))
+
 ## [1.3.0](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.2.0...v1.3.0) (2025-11-18)
 
 
