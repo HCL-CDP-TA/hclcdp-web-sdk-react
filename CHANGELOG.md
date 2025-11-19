@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.5](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.3.4...v1.3.5) (2025-11-19)
+
+
+### Bug Fixes
+
+* add SSR guards to CdpProvider and CdpContext for Next.js Page Router compatibility ([6919615](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/69196156b34a4dd79e79489d1c43ee90ca57037e))
+
 ## [1.3.4](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.3.3...v1.3.4) (2025-11-19)
 
 
