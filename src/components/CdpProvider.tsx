@@ -73,22 +73,14 @@ export type EventObject = {
   otherIds?: Record<string, unknown>
 }
 
-export const CdpProvider = ({ config, children }: CdpProviderProps) => {
+// Internal component that uses hooks - only rendered on client
+const CdpProviderClient = ({ config, children }: CdpProviderProps) => {
   const [isReady, setIsReady] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
   const [eventIdentifier, setEventIdentifier] = useState("page")
   const [pageProperties, setPageProperties] = useState({})
   const initialized = useRef(false)
 
-  // Detect if we're on the client side
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
-    // Only initialize if we're mounted (client-side)
-    if (!isMounted || typeof window === "undefined") return
-
     if (!initialized.current) {
       if (!config.writeKey) {
         console.error("CdpProvider: Missing writeKey")
@@ -99,35 +91,29 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
         if (!error) {
           initialized.current = true
           setIsReady(true)
-          // SDK's EventQueue automatically flushes during init - no need to process queue here
         } else {
           console.error("CDPProvider initialization failed:", error)
         }
       })
     }
-  }, [config.writeKey, isMounted])
+  }, [config.writeKey])
 
   const page = ({ identifier = eventIdentifier, properties = pageProperties, otherIds = {} }: EventObject) => {
-    // SDK handles queuing internally if not initialized yet
     HclCdp.page(identifier, properties, otherIds)
   }
 
   const track = ({ identifier, properties = {}, otherIds = {} }: EventObject) => {
-    // SDK handles queuing internally if not initialized yet
     HclCdp.track(identifier, properties, otherIds)
   }
 
   const identify = ({ identifier, properties = {}, otherIds = {} }: EventObject) => {
-    // SDK handles queuing internally if not initialized yet
     HclCdp.identify(identifier, properties, otherIds)
   }
 
   const login = ({ identifier, properties = {}, otherIds = {} }: EventObject) => {
-    // SDK handles queuing internally if not initialized yet
     if ((HclCdp as any).login) {
       ;(HclCdp as any).login(identifier, properties, otherIds)
     } else {
-      // Fallback to identify if login method doesn't exist
       HclCdp.identify(identifier, properties, otherIds)
     }
   }
@@ -209,7 +195,6 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
     return {}
   }
 
-  // Always render with context, but only initialize CDP on client
   return (
     <CdpContextProvider>
       <CdpContext.Provider
@@ -238,6 +223,46 @@ export const CdpProvider = ({ config, children }: CdpProviderProps) => {
       </CdpContext.Provider>
     </CdpContextProvider>
   )
+}
+
+// Exported component with SSR guard
+export const CdpProvider = ({ config, children }: CdpProviderProps) => {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // During SSR, render children with default context
+  if (!isClient) {
+    return (
+      <CdpContext.Provider value={{
+        isReady: false,
+        page: () => {},
+        track: () => {},
+        identify: () => {},
+        login: () => {},
+        logout: () => {},
+        flushQueue: () => {},
+        setEventIdentifier: () => {},
+        setPageProperties: () => {},
+        getIdentityData: () => null,
+        getSessionData: () => null,
+        getDeviceSessionId: () => "",
+        getUserSessionId: () => "",
+        setSessionLogging: () => {},
+        setDeviceSessionLogging: () => {},
+        setUserSessionLogging: () => {},
+        setUserLogoutLogging: () => {},
+        setInactivityTimeout: () => {},
+        getConfig: () => ({}),
+      }}>
+        {children}
+      </CdpContext.Provider>
+    )
+  }
+
+  return <CdpProviderClient config={config}>{children}</CdpProviderClient>
 }
 
 export const useCdp = () => useContext(CdpContext)

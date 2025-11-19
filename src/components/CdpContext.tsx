@@ -1,5 +1,5 @@
 "use client"
-import { createContext, useContext, useState, ReactNode } from "react"
+import { createContext, useContext, useState, ReactNode, useEffect, Fragment } from "react"
 
 type CdpContextValue = {
   eventIdentifier: string
@@ -11,7 +11,8 @@ type CdpContextValue = {
 // Create the context
 const CdpContext = createContext<CdpContextValue | null>(null)
 
-export const CdpContextProvider = ({ children }: { children: ReactNode }) => {
+// Internal component that uses hooks
+const CdpContextProviderClient = ({ children }: { children: ReactNode }) => {
   const [eventIdentifier, setEventIdentifier] = useState("page")
   const [pageProperties, setPageProperties] = useState<Record<string, unknown>>({})
 
@@ -20,6 +21,22 @@ export const CdpContextProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </CdpContext.Provider>
   )
+}
+
+// Exported component with SSR guard
+export const CdpContextProvider = ({ children }: { children: ReactNode }) => {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // During SSR or before hydration, render without the context
+  if (!isClient) {
+    return <Fragment>{children}</Fragment>
+  }
+
+  return <CdpContextProviderClient>{children}</CdpContextProviderClient>
 }
 
 export const useCdpContext = () => {
