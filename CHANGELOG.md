@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.4](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.3.3...v1.3.4) (2025-11-19)
+
+
+### Bug Fixes
+
+* update pakg lock file ([3eb35fb](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/commit/3eb35fb408db218a69c67875eeb36825d87b3790))
+
 ## [1.3.3](https://github.com/HCL-CDP-TA/hclcdp-web-sdk-react/compare/v1.3.2...v1.3.3) (2025-11-19)
 
 
